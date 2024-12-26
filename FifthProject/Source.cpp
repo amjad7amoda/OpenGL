@@ -10,6 +10,9 @@
 #include <fstream>
 #include "Model_3DS.h"
 #include <ctime>
+#include "Chair.h"
+#include "Table.h"
+#include "Colba.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -54,12 +57,13 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	glLoadIdentity();									// Reset The Modelview Matrix
 }
 
+
 //Camera Global
 Camera MyCamera;
 
 //Texture Global
 int SKYFRONT, SKYBACK, SKYLEFT, SKYRIGHT, SKYUP, SKYDOWN, Plate;
-
+int McDonaldsLogo;
 //Model Global
 Model_3DS *tank;
 Model_3DS* tree;
@@ -145,7 +149,7 @@ void Draw_Skybox(float x, float y, float z, float width, float height, float len
 }
 
 float width, height, depth, x, y;
-float eyeX = 0, eyeY = 1, eyeZ = 4, angel = -1.5, pitch = 0;
+float eyeX = 0, eyeY = 1.25, eyeZ = 4, angel = -1.5, pitch = 0;
 
 ;
 
@@ -170,6 +174,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	SKYUP = LoadTexture("Gallery\\SkyBox\\floor.bmp", 255);
 	SKYDOWN = LoadTexture("Gallery\\SkyBox\\floor.bmp", 255);
 	Plate = LoadTexture("Gallery\\Syria.bmp");
+	McDonaldsLogo = LoadTexture("Gallery\\Resturants\\McDonald's\\McDonalds-Logo.bmp", 255);
 	glDisable(GL_TEXTURE_2D);
 
 
@@ -238,15 +243,13 @@ void Key(bool* keys) {
 	}
 }
 
-
-
 void glSetColor3f(float r, float g, float b) {
 	if (isLightingEnabled) 
 		glColor3f(r, g, b);
 	else 
 		glColor3f(r * 0.2f, g * 0.2f, b * 0.2f);
 }
-void camera(bool* keys, float speed = 0.05) {
+void CameraController(bool* keys, float speed = 0.05) {
 	MyCamera.Render();
 	float boundaryX = width * 0.975f / 2.0f;
 	float boundaryYMin = height * 0.025f;
@@ -267,11 +270,11 @@ void camera(bool* keys, float speed = 0.05) {
 
 	// Rotate left
 	if (keys['A'])
-		angel -= speed / 2;
+		angel -= speed / 3;
 
 	// Rotate right
 	if (keys['D'])
-		angel += speed / 2;
+		angel += speed / 3;
 
 	// Move forward
 	if (keys['W']) {
@@ -308,6 +311,8 @@ void camera(bool* keys, float speed = 0.05) {
 		if ((eyeY1 > boundaryYMin) && (eyeY1 < boundaryYMax))
 			eyeY = eyeY1;
 	}
+
+	gluLookAt(eyeX, eyeY, eyeZ, eyeX + cos(angel), eyeY, eyeZ + sin(angel), 0, 6, 0);
 }
 
 void move_tank(float speed){
@@ -333,69 +338,7 @@ void DrawTexturedPlate(int x, int y , int z ,int plate) {
 	glTexCoord2f(0.0f, 1.0f); glVertex3f(-width / 2, height / 2, depth);
 	glEnd();
 }
-void DrawTable(float x, float y, float z) {
-	glColor3f(1, 1, 1);
 
-	// Table dimensions
-	float tableTopSize = 1.5f;
-	float tableTopThickness = 0.1f;
-	float tableHeight = 0.7f;
-	float legThickness = 0.1f;
-
-
-	// Draw table top
-	glPushMatrix();
-	glTranslatef(x, y + tableHeight - tableTopThickness / 2.0f, z);
-	glScalef(tableTopSize, tableTopThickness, tableTopSize);
-	glSetColor3f(0.6f, 0.3f, 0.1f);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	// Draw table legs
-	for (int i = 0; i < 4; i++) {
-		float legX = x + (i % 2 == 0 ? -1 : 1) * (tableTopSize / 2.0f - legThickness / 2.0f);
-		float legZ = z + (i / 2 == 0 ? -1 : 1) * (tableTopSize / 2.0f - legThickness / 2.0f);
-
-		glPushMatrix();
-		glTranslatef(legX, y + (tableHeight - tableTopThickness) / 2.0f, legZ);
-		glScalef(legThickness, tableHeight - tableTopThickness, legThickness);
-		glSetColor3f(0.4f, 0.2f, 0.1f); // Darker brown for legs
-		glutSolidCube(1.0);
-		glPopMatrix();
-	}
-}
-void DrawChair(float x, float y, float z, float chairSeatSize, float chairSeatHeight, float chairBackrestHeight, float chairLegThickness) {
-	// Draw chair seat
-	glColor3f(1, 1, 1);
-
-	glPushMatrix();
-	glTranslatef(x, y + chairSeatHeight, z);
-	glScalef(chairSeatSize, chairLegThickness, chairSeatSize);
-	glSetColor3f(0.6f, 0.3f, 0.1f);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	// Draw chair backrest
-	glPushMatrix();
-	glTranslatef(x, y + chairSeatHeight + chairBackrestHeight / 2.0f, z - chairSeatSize / 2.0f + chairLegThickness / 2.0f);
-	glScalef(chairSeatSize, chairBackrestHeight, chairLegThickness);
-	glSetColor3f(0.4f, 0.2f, 0.1f);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	// Draw chair legs
-	for (int i = 0; i < 4; i++) {
-		float legX = x + (i % 2 == 0 ? -1 : 1) * (chairSeatSize / 2.0f - chairLegThickness / 2.0f);
-		float legZ = z + (i / 2 == 0 ? -1 : 1) * (chairSeatSize / 2.0f - chairLegThickness / 2.0f);
-		glPushMatrix();
-		glTranslatef(legX, y + chairSeatHeight / 2.0f, legZ);
-		glScalef(chairLegThickness, chairSeatHeight, chairLegThickness);
-		glSetColor3f(0.4f, 0.2f, 0.1f);
-		glutSolidCube(1.0);
-		glPopMatrix();
-	}
-	glColor3f(1, 1, 1);
-}
 void DrawTableWithChairs(float x, float y, float z) {
 	glColor3f(1, 1, 1);
 	//glClear(GL_COLOR_BUFFER_BIT);
@@ -412,40 +355,41 @@ void DrawTableWithChairs(float x, float y, float z) {
 	float chairBackrestHeight = 0.5f;
 
 	// Draw table
-	DrawTable(x, y, z);
+	Table table(x, y, z, tableTopSize, tableTopThickness, tableHeight, legThickness);
+	table.Draw();
 
 	// Draw chairs around the table
 	float chairDistance = tableTopSize / 2.0f + chairSeatSize / 2.0f + 0.1f;
 
+	
 	// Left chair
+	Chair chair(0, 0, 0, chairSeatSize, chairSeatHeight, chairBackrestHeight, chairLegThickness);
 	glPushMatrix();
 	glTranslatef(x - chairDistance, y, z);
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	DrawChair(0.0f, 0.0f, 0.0f, chairSeatSize, chairSeatHeight, chairBackrestHeight, chairLegThickness);
+	chair.Draw();
 	glPopMatrix();
 
 	// Right chair
 	glPushMatrix();
 	glTranslatef(x + chairDistance, y, z);
 	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f); // Rotate to face the table
-	DrawChair(0.0f, 0.0f, 0.0f, chairSeatSize, chairSeatHeight, chairBackrestHeight, chairLegThickness);
+	chair.Draw();
 	glPopMatrix();
 
 	// Front chair
 	glPushMatrix();
 	glTranslatef(x, y, z - chairDistance);
-	DrawChair(0.0f, 0.0f, 0.0f, chairSeatSize, chairSeatHeight, chairBackrestHeight, chairLegThickness);
+	chair.Draw();
 	glPopMatrix();
 
 	// Back chair
 	glPushMatrix();
 	glTranslatef(x, y, z + chairDistance);
-
 	glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-	DrawChair(0.0f, 0.0f, 0.0f, chairSeatSize, chairSeatHeight, chairBackrestHeight, chairLegThickness);
+	chair.Draw();
 	glPopMatrix();
 }
-
 void DrawSkyBox() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	float halfWidth = width / 2.0f;
@@ -533,51 +477,69 @@ void DrawSkyBox() {
 	glVertex3f(-halfWidth, 0, -halfDepth);
 	glEnd();
 }
+void DrawResturant(int w, int h, int d) {
+	width = w; height = h; depth = d;
+
+	//Draw The sky box
+	glEnable(GL_TEXTURE_2D);
+	DrawSkyBox();
+	glDisable(GL_TEXTURE_2D);
+
+	//Table and chairs
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	//Right
+	DrawTableWithChairs(12.0f, 0.0f, 7.0f);
+	DrawTableWithChairs(8.0f, 0.0f, 7.0f);
+	DrawTableWithChairs(12.0f, 0.0f, 3.0f);
+	DrawTableWithChairs(8.0f, 0.0f, 3.0f);
+	DrawTableWithChairs(12.0f, 0.0f, -1.0f);
+	DrawTableWithChairs(8.0f, 0.0f, -1.0f);
+	//Left
+	DrawTableWithChairs(-12.0f, 0.0f, 7.0f);
+	DrawTableWithChairs(-8.0f, 0.0f, 7.0f);
+	DrawTableWithChairs(-12.0f, 0.0f, 3.0f);
+	DrawTableWithChairs(-8.0f, 0.0f, 3.0f);
+	DrawTableWithChairs(-12.0f, 0.0f, -1.0f);
+	DrawTableWithChairs(-8.0f, 0.0f, -1.0f);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+
+
+	
+	//Draw Colba
+	Colba colba(5, 4, 4);
+	
+	//1
+	glPushMatrix();
+	glTranslatef(-12.5,0, -(depth / 2) + 2);
+	colba.draw();
+	colba.setBack(Plate);
+	colba.setFront(McDonaldsLogo, 0);
+	colba.setRight(SKYFRONT);
+	glPopMatrix();
+	//2
+	glPushMatrix();
+	glTranslatef(-6.5, 0, -(depth / 2) + 2);
+	colba.draw();
+	colba.setBack(SKYBACK);
+	colba.setRight(SKYFRONT);
+	colba.setLeft(SKYFRONT);
+	glPopMatrix();
+	
+}
 
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
-	
 	Key(keys);
-	camera(keys);
-	gluLookAt(eyeX, eyeY, eyeZ, eyeX + cos(angel), eyeY, eyeZ + sin(angel), 0, 6, 0);
-	move_tank(0.1);
-	
-	//LightAmb[0] = x;
-	//LightAmb[1] = x;
-	//LightAmb[2] = x;
-	//glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmb);
+	CameraController(keys);
 
-	width = 20; height = 4; depth = 15;
-	glEnable(GL_TEXTURE_2D);
-	DrawSkyBox();
-	//Plate
-	glPushMatrix();
-	glTranslatef((width / 2) - 0.05f, (height / 2.0f) + 0.25, (depth / 2) - 1.5);
-	glRotatef(90, 0.0f, 1.0f, 0.0f);
-	DrawTexturedPlate(2,1,0,Plate);
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	//tree->Draw();
-	tank->Draw();
+	DrawResturant(30,4,20);
 
-	glDisable(GL_LIGHTING);
-	glPushMatrix();
 	
-	DrawTableWithChairs(8.0f, 0.0f, 5.0f);
-	DrawTableWithChairs(8.0f, 0.0f, 1.0f);
-	DrawTableWithChairs(4.0f, 0.0f, 5.0f);
-	DrawTableWithChairs(4.0f, 0.0f, 1.0f);
-	DrawTableWithChairs(-8.0f, 0.0f, 5.0f);
-	DrawTableWithChairs(-8.0f, 0.0f, 1.0f);
-	DrawTableWithChairs(-4.0f, 0.0f, 5.0f);
-	DrawTableWithChairs(-4.0f, 0.0f, 1.0f);
-	
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
-	//glDisable(GL_LIGHT1);
 	return TRUE;
 }
 
