@@ -4,7 +4,7 @@ Colba::Colba(float width, float height, float depth) {
     w = width;
     h = height;
     d = depth;
-    offset = 0.01f;  // فرق صغير لتجنب التداخل
+    offset = 0.001f;  // فرق صغير لتجنب التداخل
 }
 
 extern bool isLightingEnabled;
@@ -29,19 +29,19 @@ void Colba::draw() {
     // Left Face
     glSetColor3f(0, 1, 0);
     glBegin(GL_QUADS);
-    glVertex3f(-w / 2 + offset, 0, d / 2 + offset);
+    glVertex3f(-w / 2 + offset, 0, d / 2 - offset);
     glVertex3f(-w / 2 + offset, 0, -d / 2 - offset);
     glVertex3f(-w / 2 + offset, h + 2, -d / 2 - offset);
-    glVertex3f(-w / 2 + offset, h + 2, d / 2 + offset);
+    glVertex3f(-w / 2 + offset, h + 2, d / 2 - offset);
     glEnd();
 
     // Right Face
     glSetColor3f(0, 0, 1);
     glBegin(GL_QUADS);
-    glVertex3f(w / 2 - offset, 0, d / 2 + offset);
+    glVertex3f(w / 2 - offset, 0, d / 2 - offset);
     glVertex3f(w / 2 - offset, 0, -d / 2 - offset);
     glVertex3f(w / 2 - offset, h + 2, -d / 2 - offset);
-    glVertex3f(w / 2 - offset, h + 2, d / 2 + offset);
+    glVertex3f(w / 2 - offset, h + 2, d / 2 - offset);
     glEnd();
 
     // Back Face

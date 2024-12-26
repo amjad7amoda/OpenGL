@@ -3,7 +3,7 @@
 
 #include <GL/glut.h>
 
-extern bool isLightingEnabled;
+extern int isLightingEnabled;
 extern void glSetColor3f(float r, float g, float b);
 
 class Table {
@@ -11,10 +11,10 @@ public:
     float x, y, z;
     float tableTopSize, tableTopThickness, tableHeight, legThickness;
 
-    // Constructor
+   //Constructer
     Table(float _x, float _y, float _z, float _tableTopSize, float _tableTopThickness, float _tableHeight, float _legThickness);
 
-    // Method to draw the table
+   //Functions
     void Draw();
 };
 

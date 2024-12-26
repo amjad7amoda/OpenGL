@@ -3,7 +3,7 @@
 
 #include <GL/glut.h>
 
-extern bool isLightingEnabled;
+extern int isLightingEnabled;
 extern void glSetColor3f(float r, float g, float b);
 
 class Chair {

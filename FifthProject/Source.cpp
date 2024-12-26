@@ -26,7 +26,7 @@ HINSTANCE	hInstance;		// Holds The Instance Of The Application
 bool	keys[256];			// Array Used For The Keyboard Routine
 bool	active = TRUE;		// Window Active Flag Set To TRUE By Default
 bool	fullscreen = FALSE;	// Fullscreen Flag Set To Fullscreen Mode By Default
-GLfloat LightPos[] = { 0.0f,0.0f,0.0f,1.0f };
+GLfloat LightPos[] = { 0.0f,0.4f,0.0f,1.0f };
 GLfloat LightAmb[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 GLfloat LightDiff[] = { 1.0f,1.0f,1.0f,1.0f };
 GLfloat LightSpec[] = { 1.0f,1.0f,1.0f,1.0f };
@@ -64,6 +64,7 @@ Camera MyCamera;
 //Texture Global
 int SKYFRONT, SKYBACK, SKYLEFT, SKYRIGHT, SKYUP, SKYDOWN, Plate;
 int McDonaldsLogo;
+int Fence;
 //Model Global
 Model_3DS *tank;
 Model_3DS* tree;
@@ -175,6 +176,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	SKYDOWN = LoadTexture("Gallery\\SkyBox\\floor.bmp", 255);
 	Plate = LoadTexture("Gallery\\Syria.bmp");
 	McDonaldsLogo = LoadTexture("Gallery\\Resturants\\McDonald's\\McDonalds-Logo.bmp", 255);
+	Fence = LoadTexture("Gallery\\Resturants\\Fence.bmp", 255);
 	glDisable(GL_TEXTURE_2D);
 
 
@@ -210,10 +212,13 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	tree->Materials[2].tex = Leaf;
 	tree->Materials[3].tex = Leaf;
 	tree->Materials[4].tex = Leaf;
-	tree->pos.x = 0;
+	tree->pos.x = -3;
 	tree->pos.y = 0;
-	tree->pos.z = 0;
-	tree->scale = 0.05;
+	tree->pos.z = -5.5;
+	tree->scale = 0.2;
+	
+
+
 
 	//Camera Definition
 	MyCamera = Camera();
@@ -221,34 +226,47 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	return TRUE;										// Initialization Went OK
 }
 
-bool isLightingEnabled = true;
+int isLightingEnabled = 2;
 void Key(bool* keys) {
-	if (keys['L']) {
-		isLightingEnabled = true;
-		LightAmb[0] = 1; LightAmb[1] = 1; LightAmb[2] = 1;
-		LightDiff[0] = 1; LightDiff[1] = 1; LightDiff[2] = 1;
-		LightSpec[0] = 1; LightSpec[1] = 1; LightSpec[2] = 1;
+	if (keys['Z']) { 
+		isLightingEnabled = 2;
+		GLfloat LightAmb[3] = { 1.0f, 1.0f, 1.0f };
+		GLfloat LightDiff[3] = { 1.0f, 1.0f, 0.9f }; 
+		GLfloat LightSpec[3] = { 1.0f, 1.0f, 0.8f }; 
 		glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmb);
-		glLightfv(GL_LIGHT1, GL_SPECULAR, LightAmb);
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, LightAmb);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiff);
+		glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpec);
 	}
-	if (keys['O']) {
-		isLightingEnabled = false;
-		LightAmb[0] = 0; LightAmb[1] = 0; LightAmb[2] = 0;
-		LightDiff[0] = 0; LightDiff[1] = 0; LightDiff[2] = 0;
-		LightSpec[0] = 0; LightSpec[1] = 0; LightSpec[2] = 0;
+	if (keys['X']) { 
+		isLightingEnabled = 1;
+		GLfloat LightAmb[3] = { 0.2f, 0.2f, 0.4f }; 
+		GLfloat LightDiff[3] = { 0.4f, 0.4f, 0.6f }; 
+		GLfloat LightSpec[3] = { 0.5f, 0.5f, 0.7f };
 		glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmb);
-		glLightfv(GL_LIGHT1, GL_SPECULAR, LightAmb);
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, LightAmb);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiff);
+		glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpec);
+	}
+	if (keys['C']) {
+		isLightingEnabled = 0;
+		GLfloat LightAmb[3] = { 0.0f, 0.0f, 0.0f }; 
+		GLfloat LightDiff[3] = { 0.0f, 0.0f, 0.0f };
+		GLfloat LightSpec[3] = { 0.0f, 0.0f, 0.0f };
+		glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmb);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiff);
+		glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpec);
 	}
 }
 
+
 void glSetColor3f(float r, float g, float b) {
-	if (isLightingEnabled) 
+	if (isLightingEnabled == 2) 
 		glColor3f(r, g, b);
-	else 
-		glColor3f(r * 0.2f, g * 0.2f, b * 0.2f);
+	else if (isLightingEnabled == 1) 
+		glColor3f(r * 0.5f, g * 0.5f, b * 0.5f); 
+	else if (isLightingEnabled == 0) 
+		glColor3f(r * 0.2f, g * 0.2f, b * 0.2f); 
 }
+
 void CameraController(bool* keys, float speed = 0.05) {
 	MyCamera.Render();
 	float boundaryX = width * 0.975f / 2.0f;
@@ -280,7 +298,7 @@ void CameraController(bool* keys, float speed = 0.05) {
 	if (keys['W']) {
 		eyeX1 += cos(angel) * speed;
 		eyeZ1 += sin(angel) * speed;
-		if ((eyeX1 > -boundaryX) && (eyeX1 < boundaryX) && (eyeZ1 > -boundaryZ) && (eyeZ1 < boundaryZ)) {
+		if ((eyeX1 > -boundaryX) && (eyeX1 < boundaryX) && (eyeZ1 > -boundaryZ) && (eyeZ1 < boundaryZ) && (eyeZ1 > -5.7)) {
 			eyeX = eyeX1;
 			eyeZ = eyeZ1;
 		}
@@ -290,7 +308,7 @@ void CameraController(bool* keys, float speed = 0.05) {
 	if (keys['S']) {
 		eyeX1 -= cos(angel) * speed;
 		eyeZ1 -= sin(angel) * speed;
-		if ((eyeX1 > -boundaryX) && (eyeX1 < boundaryX) && (eyeZ1 > -boundaryZ) && (eyeZ1 < boundaryZ)) {
+		if ((eyeX1 > -boundaryX) && (eyeX1 < boundaryX) && (eyeZ1 > -boundaryZ) && (eyeZ1 < boundaryZ) && (eyeZ1 > -5.7)) {
 			eyeX = eyeX1;
 			eyeZ = eyeZ1;
 		}
@@ -327,8 +345,7 @@ void move_tank(float speed){
 		tank->pos.x -=speed;
 
 }
-
-void DrawTexturedPlate(int x, int y , int z ,int plate) {
+void DrawTexturedPlate(int w, int h, int d, int plate) {
 	glColor3f(1, 1, 1);
 	glBindTexture(GL_TEXTURE_2D, plate); 
 	glBegin(GL_QUADS); 
@@ -338,7 +355,6 @@ void DrawTexturedPlate(int x, int y , int z ,int plate) {
 	glTexCoord2f(0.0f, 1.0f); glVertex3f(-width / 2, height / 2, depth);
 	glEnd();
 }
-
 void DrawTableWithChairs(float x, float y, float z) {
 	glColor3f(1, 1, 1);
 	//glClear(GL_COLOR_BUFFER_BIT);
@@ -390,7 +406,10 @@ void DrawTableWithChairs(float x, float y, float z) {
 	chair.Draw();
 	glPopMatrix();
 }
+
 void DrawSkyBox() {
+	glEnable(GL_TEXTURE_2D);
+	
 	glClear(GL_COLOR_BUFFER_BIT);
 	float halfWidth = width / 2.0f;
 	float halfDepth = depth / 2.0f;
@@ -476,57 +495,127 @@ void DrawSkyBox() {
 	glTexCoord2d(0, depth);
 	glVertex3f(-halfWidth, 0, -halfDepth);
 	glEnd();
-}
-void DrawResturant(int w, int h, int d) {
-	width = w; height = h; depth = d;
 
-	//Draw The sky box
-	glEnable(GL_TEXTURE_2D);
-	DrawSkyBox();
 	glDisable(GL_TEXTURE_2D);
-
+}
+void DrawTables() {
 	//Table and chairs
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
 	//Right
-	DrawTableWithChairs(12.0f, 0.0f, 7.0f);
-	DrawTableWithChairs(8.0f, 0.0f, 7.0f);
-	DrawTableWithChairs(12.0f, 0.0f, 3.0f);
-	DrawTableWithChairs(8.0f, 0.0f, 3.0f);
-	DrawTableWithChairs(12.0f, 0.0f, -1.0f);
-	DrawTableWithChairs(8.0f, 0.0f, -1.0f);
+	DrawTableWithChairs(12.0f, 0.0f, 8.0f);
+	DrawTableWithChairs(8.0f, 0.0f, 8.0f);
+	DrawTableWithChairs(4.0f, 0.0f, 8.0f);
+	DrawTableWithChairs(12.0f, 0.0f, 4.0f);
+	DrawTableWithChairs(8.0f, 0.0f, 4.0f);
+	DrawTableWithChairs(4.0f, 0.0f, 4.0f);
+	DrawTableWithChairs(12.0f, 0.0f, 0.0f);
+	DrawTableWithChairs(8.0f, 0.0f, 0.0f);
+	DrawTableWithChairs(4.0f, 0.0f, 0.0f);
+
 	//Left
-	DrawTableWithChairs(-12.0f, 0.0f, 7.0f);
-	DrawTableWithChairs(-8.0f, 0.0f, 7.0f);
-	DrawTableWithChairs(-12.0f, 0.0f, 3.0f);
-	DrawTableWithChairs(-8.0f, 0.0f, 3.0f);
-	DrawTableWithChairs(-12.0f, 0.0f, -1.0f);
-	DrawTableWithChairs(-8.0f, 0.0f, -1.0f);
+	DrawTableWithChairs(-12.0f, 0.0f, 8.0f);
+	DrawTableWithChairs(-8.0f, 0.0f, 8.0f);
+	DrawTableWithChairs(-4.0f, 0.0f, 8.0f);
+	DrawTableWithChairs(-12.0f, 0.0f, 4.0f);
+	DrawTableWithChairs(-8.0f, 0.0f, 4.0f);
+	DrawTableWithChairs(-4.0f, 0.0f, 4.0f);
+	DrawTableWithChairs(-12.0f, 0.0f, 0.0f);
+	DrawTableWithChairs(-8.0f, 0.0f, 0.0f);
+	DrawTableWithChairs(-4.0f, 0.0f, 0.0f);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
+}
+void DrawTriangle() {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, Fence);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0, 0); glVertex3f(2.49, 0, 2);
+	glTexCoord2d(0.5, 0); glVertex3f(3.51, 0, 2);
+	glTexCoord2d(0.5, 1); glVertex3f(3.51, 4, 2);
+	glTexCoord2d(0, 1);  glVertex3f(2.49, 4, 2);
+	glEnd();
 
-
-	
-	//Draw Colba
+	glBegin(GL_QUADS);
+	glTexCoord2d(0, 0); glVertex3f(3.51, 4, 2);
+	glTexCoord2d(1, 0); glVertex3f(3.51, 5, 2);
+	glTexCoord2d(1, 0.5); glVertex3f(-2.51, 5, 2);
+	glTexCoord2d(0, 0.5);  glVertex3f(-2.51, 4, 2);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glSetColor3f(1, 1, 1);
+}
+void DrawColbas() {
 	Colba colba(5, 4, 4);
-	
 	//1
 	glPushMatrix();
-	glTranslatef(-12.5,0, -(depth / 2) + 2);
+	glTranslatef(-12, 0, -(depth / 2) + 2);
 	colba.draw();
-	colba.setBack(Plate);
+	colba.setFront(0, Fence);
+	DrawTriangle();
 	colba.setFront(McDonaldsLogo, 0);
-	colba.setRight(SKYFRONT);
 	glPopMatrix();
 	//2
 	glPushMatrix();
-	glTranslatef(-6.5, 0, -(depth / 2) + 2);
+	glTranslatef(-6, 0, -(depth / 2) + 2);
 	colba.draw();
-	colba.setBack(SKYBACK);
-	colba.setRight(SKYFRONT);
-	colba.setLeft(SKYFRONT);
+	colba.setFront(0, Fence);
+	DrawTriangle();
 	glPopMatrix();
-	
+	//3
+	glPushMatrix();
+	glTranslatef(0.0, 0, -(depth / 2) + 2);
+	colba.draw();
+	colba.setFront(0, Fence);
+	DrawTriangle();
+	glPopMatrix();
+	//4
+	glPushMatrix();
+	glTranslatef(6, 0, -(depth / 2) + 2);
+	colba.draw();
+	colba.setFront(0, Fence);
+	DrawTriangle();
+	glPopMatrix();
+	//5
+	glPushMatrix();
+	glTranslatef(12, 0, -(depth / 2) + 2);
+	colba.draw();
+	DrawTriangle();
+	colba.setFront(0, Fence);
+	glPopMatrix();
+}
+void DrawTrees() {
+	tree->pos.x = -3;
+	tree->pos.y = 0;
+	tree->pos.z = -5.5;
+	tree->scale = 0.2;
+	tree->Draw();
+	tree->pos.x = 3;
+	tree->pos.y = 0;
+	tree->pos.z = -5.5;
+	tree->scale = 0.2;
+	tree->Draw();
+	tree->pos.x = 9;
+	tree->pos.y = 0;
+	tree->pos.z = -5.5;
+	tree->scale = 0.2;
+	tree->Draw();
+	tree->pos.x = -9;
+	tree->pos.y = 0;
+	tree->pos.z = -5.5;
+	tree->scale = 0.2;
+	tree->Draw();
+}
+void DrawResturant(int w, int h, int d) {
+	width = w; height = h; depth = d;
+	//Draw SkyBox
+	DrawSkyBox();
+	//Draw Tables
+	DrawTables();
+	//Draw Colba
+	DrawColbas();
+	//Draw Tree
+	DrawTrees();
 }
 
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
@@ -537,9 +626,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	Key(keys);
 	CameraController(keys);
 
-	DrawResturant(30,4,20);
+	DrawResturant(29,5,20);
 
-	
 	return TRUE;
 }
 
