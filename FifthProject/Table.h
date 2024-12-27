@@ -16,6 +16,8 @@ public:
 
    //Functions
     void Draw();
+    void setTableTexture(int Table);
+    void setLegsTexture(int tableLegs);
 };
 
 #endif

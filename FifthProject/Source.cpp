@@ -62,92 +62,14 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 Camera MyCamera;
 
 //Texture Global
-int SKYFRONT, SKYBACK, SKYLEFT, SKYRIGHT, SKYUP, SKYDOWN, Plate;
-int McDonaldsLogo;
-int Fence;
+int SKYFRONT, SKYBACK, SKYLEFT, SKYRIGHT, SKYUP, SKYDOWN;
+int McDonaldsLogo, McDonaldsUnderLogo, PizzaHotLogo, PizzaHotUnderLogo;
+int SyriaPlate, SalesPlate;
+int Fence, tableTexture, tableLegsTexture;
 //Model Global
 Model_3DS *tank;
 Model_3DS* tree;
 GLTexture BARK, Leaf;
-
-void Draw_Skybox(float x, float y, float z, float width, float height, float length)
-{
-	// Center the Skybox around the given x,y,z position
-	x = x - width / 2;
-	y = y - height / 2;
-	z = z - length / 2;
-	glEnable(GL_TEXTURE_2D);
-
-	// Draw Front side
-	glBindTexture(GL_TEXTURE_2D, SKYFRONT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y, z + length);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y + height, z + length);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y + height, z + length);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y, z + length);
-	glEnd();
-
-	// Draw Back side
-	glBindTexture(GL_TEXTURE_2D, SKYBACK);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(x + width, y, z);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(x + width, y + height, z);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(x, y + height, z);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(x, y, z);
-	glEnd();
-
-	// Draw Left side
-	glBindTexture(GL_TEXTURE_2D, SKYLEFT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y + height, z);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(x, y + height, z + length);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(x, y, z + length);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y, z);
-	glEnd();
-
-	// Draw Right side
-	glBindTexture(GL_TEXTURE_2D, SKYRIGHT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y, z);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(x + width, y, z + length);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(x + width, y + height, z + length);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y + height, z);
-	glEnd();
-
-	// Draw Up side
-	glBindTexture(GL_TEXTURE_2D, SKYUP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y + height, z);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(x + width, y + height, z + length);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y + height, z + length);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(x, y + height, z);
-	glEnd();
-
-	// Draw Down side
-	glBindTexture(GL_TEXTURE_2D, SKYDOWN);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(x, y, z);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y, z + length);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(x + width, y, z + length);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y, z);
-	glEnd();
-
-	glColor3f(1, 1, 1);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-}
 
 float width, height, depth, x, y;
 float eyeX = 0, eyeY = 1.25, eyeZ = 4, angel = -1.5, pitch = 0;
@@ -174,9 +96,15 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	SKYRIGHT = LoadTexture("Gallery\\SkyBox\\CyenWall.bmp", 255);
 	SKYUP = LoadTexture("Gallery\\SkyBox\\floor.bmp", 255);
 	SKYDOWN = LoadTexture("Gallery\\SkyBox\\floor.bmp", 255);
-	Plate = LoadTexture("Gallery\\Syria.bmp");
+	SyriaPlate = LoadTexture("Gallery\\Plates\\Syria.bmp");
+	SalesPlate = LoadTexture("Gallery\\Plates\\Sales.bmp");
 	McDonaldsLogo = LoadTexture("Gallery\\Resturants\\McDonald's\\McDonalds-Logo.bmp", 255);
+	McDonaldsUnderLogo = LoadTexture("Gallery\\Resturants\\McDonald's\\McDonaldsUnderLogo.bmp", 255);
+	PizzaHotLogo = LoadTexture("Gallery\\Resturants\\PizzaHot\\PizzaHot.bmp");
+	PizzaHotUnderLogo = LoadTexture("Gallery\\Resturants\\PizzaHot\\PizzaHotUnderLogo.bmp");
 	Fence = LoadTexture("Gallery\\Resturants\\Fence.bmp", 255);
+	tableTexture = LoadTexture("Gallery\\Table\\Table.bmp");
+	tableLegsTexture = LoadTexture("Gallery\\Table\\TableLegs.bmp");
 	glDisable(GL_TEXTURE_2D);
 
 
@@ -256,8 +184,6 @@ void Key(bool* keys) {
 		glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpec);
 	}
 }
-
-
 void glSetColor3f(float r, float g, float b) {
 	if (isLightingEnabled == 2) 
 		glColor3f(r, g, b);
@@ -266,7 +192,6 @@ void glSetColor3f(float r, float g, float b) {
 	else if (isLightingEnabled == 0) 
 		glColor3f(r * 0.2f, g * 0.2f, b * 0.2f); 
 }
-
 void CameraController(bool* keys, float speed = 0.05) {
 	MyCamera.Render();
 	float boundaryX = width * 0.975f / 2.0f;
@@ -326,34 +251,54 @@ void CameraController(bool* keys, float speed = 0.05) {
 	// Move downward
 	if (keys[VK_SHIFT]) {
 		eyeY1 -= speed;
-		if ((eyeY1 > boundaryYMin) && (eyeY1 < boundaryYMax))
+		if ((eyeY1 > 1.5) && (eyeY1 < boundaryYMax))
 			eyeY = eyeY1;
 	}
 
 	gluLookAt(eyeX, eyeY, eyeZ, eyeX + cos(angel), eyeY, eyeZ + sin(angel), 0, 6, 0);
 }
 
-void move_tank(float speed){
-
-	if (keys['Y'])
-		tank->pos.z -=speed;
-	if (keys['H'])
-		tank->pos.z +=speed;
-	if (keys['J'])
-		tank->pos.x +=speed;
-	if (keys['G'])
-		tank->pos.x -=speed;
-
-}
-void DrawTexturedPlate(int w, int h, int d, int plate) {
-	glColor3f(1, 1, 1);
-	glBindTexture(GL_TEXTURE_2D, plate); 
-	glBegin(GL_QUADS); 
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(-width / 2, -height / 2, depth);
-	glTexCoord2f(1.0f, 0.0f); glVertex3f(width / 2, -height / 2, depth);
-	glTexCoord2f(1.0f, 1.0f); glVertex3f(width / 2, height / 2, depth);
-	glTexCoord2f(0.0f, 1.0f); glVertex3f(-width / 2, height / 2, depth);
+void DrawPlate(int w, int h,float frameThickness, int texture) {
+	float halfW = w / 2.0f;
+	float halfH = h / 2.0f;
+	float outerHalfW = halfW + frameThickness;
+	float outerHalfH = halfH + frameThickness;
+	float frameDepth = 0.1f;
+	
+	glSetColor3f(0.4f, 0.2f, 0.1f);
+	glBegin(GL_QUADS);
+	// Top Frame
+	glVertex3f(-outerHalfW, outerHalfH, frameDepth);
+	glVertex3f(outerHalfW, outerHalfH, frameDepth);
+	glVertex3f(outerHalfW, halfH, 0);
+	glVertex3f(-outerHalfW, halfH, 0);
+	// Bottom Frame
+	glVertex3f(-outerHalfW, -outerHalfH, frameDepth);
+	glVertex3f(outerHalfW, -outerHalfH, frameDepth);
+	glVertex3f(outerHalfW, -halfH, 0);
+	glVertex3f(-outerHalfW, -halfH, 0);
+	// Right Frame
+	glVertex3f(halfW, outerHalfH, 0);
+	glVertex3f(outerHalfW, outerHalfH, frameDepth);
+	glVertex3f(outerHalfW, -outerHalfH, frameDepth);
+	glVertex3f(halfW, -outerHalfH, 0);
+	// Left Frame
+	glVertex3f(-outerHalfW, outerHalfH, frameDepth);
+	glVertex3f(-halfW, outerHalfH, 0);
+	glVertex3f(-halfW, -outerHalfH, 0);
+	glVertex3f(-outerHalfW, -outerHalfH, frameDepth);
 	glEnd();
+	glSetColor3f(1, 1, 1);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-halfW, -halfH, 0);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(halfW, -halfH, 0);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(halfW, halfH, 0);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-halfW, halfH, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 void DrawTableWithChairs(float x, float y, float z) {
 	glColor3f(1, 1, 1);
@@ -373,7 +318,8 @@ void DrawTableWithChairs(float x, float y, float z) {
 	// Draw table
 	Table table(x, y, z, tableTopSize, tableTopThickness, tableHeight, legThickness);
 	table.Draw();
-
+	table.setTableTexture(tableTexture);
+	table.setLegsTexture(tableLegsTexture);
 	// Draw chairs around the table
 	float chairDistance = tableTopSize / 2.0f + chairSeatSize / 2.0f + 0.1f;
 
@@ -553,13 +499,13 @@ void DrawColbas() {
 	colba.draw();
 	colba.setFront(0, Fence);
 	DrawTriangle();
-	colba.setFront(McDonaldsLogo, 0);
+	colba.setFront(McDonaldsLogo, McDonaldsUnderLogo);
 	glPopMatrix();
 	//2
 	glPushMatrix();
 	glTranslatef(-6, 0, -(depth / 2) + 2);
 	colba.draw();
-	colba.setFront(0, Fence);
+	colba.setFront(PizzaHotLogo, PizzaHotUnderLogo);
 	DrawTriangle();
 	glPopMatrix();
 	//3
@@ -584,28 +530,59 @@ void DrawColbas() {
 	colba.setFront(0, Fence);
 	glPopMatrix();
 }
-void DrawTrees() {
-	tree->pos.x = -3;
-	tree->pos.y = 0;
-	tree->pos.z = -5.5;
-	tree->scale = 0.2;
-	tree->Draw();
-	tree->pos.x = 3;
-	tree->pos.y = 0;
-	tree->pos.z = -5.5;
-	tree->scale = 0.2;
-	tree->Draw();
-	tree->pos.x = 9;
-	tree->pos.y = 0;
-	tree->pos.z = -5.5;
-	tree->scale = 0.2;
-	tree->Draw();
-	tree->pos.x = -9;
-	tree->pos.y = 0;
-	tree->pos.z = -5.5;
+void DrawTree(float x, float y, float z) {
+	float potWidth = 0.15f;
+	float potHeight = 0.3f;         
+
+	glSetColor3f(0.4f, 0.2f, 0.1f);
+	glBegin(GL_QUADS);
+	glVertex3f(x - potWidth, y + 0.01, z - potWidth);
+	glVertex3f(x + potWidth, y + 0.01, z - potWidth);
+	glVertex3f(x + potWidth, y + 0.01, z + potWidth);
+	glVertex3f(x - potWidth, y + 0.01, z + potWidth);
+	glEnd();
+
+	glSetColor3f(0.5f, 0.25f, 0.15f);
+	glBegin(GL_QUADS);
+	glVertex3f(x - potWidth, y + 0.01, z - potWidth);
+	glVertex3f(x + potWidth, y + 0.01, z - potWidth);
+	glVertex3f(x + potWidth, y + potHeight, z - potWidth);
+	glVertex3f(x - potWidth, y + potHeight, z - potWidth);
+	glEnd();
+
+	glSetColor3f(0.45f, 0.2f, 0.1f);
+	glBegin(GL_QUADS);
+	glVertex3f(x + potWidth, y + 0.01, z - potWidth);
+	glVertex3f(x + potWidth, y + 0.01, z + potWidth);
+	glVertex3f(x + potWidth, y + potHeight, z + potWidth);
+	glVertex3f(x + potWidth, y + potHeight, z - potWidth);
+	glEnd();
+
+	glSetColor3f(0.4f, 0.2f, 0.1f);
+	glBegin(GL_QUADS);
+	glVertex3f(x + potWidth, y + 0.01, z + potWidth);
+	glVertex3f(x - potWidth, y + 0.01, z + potWidth);
+	glVertex3f(x - potWidth, y + potHeight, z + potWidth);
+	glVertex3f(x + potWidth, y + potHeight, z + potWidth);
+	glEnd();
+
+	glSetColor3f(0.5f, 0.3f, 0.15f);
+	glBegin(GL_QUADS);
+	glVertex3f(x - potWidth, y + 0.01, z + potWidth);
+	glVertex3f(x - potWidth, y + 0.01, z - potWidth);
+	glVertex3f(x - potWidth, y + potHeight, z - potWidth);
+	glVertex3f(x - potWidth, y + potHeight, z + potWidth);
+	glEnd();
+
+	glSetColor3f(1, 1, 1);
+	
+	tree->pos.x = x;
+	tree->pos.y = y;
+	tree->pos.z = z;
 	tree->scale = 0.2;
 	tree->Draw();
 }
+
 void DrawResturant(int w, int h, int d) {
 	width = w; height = h; depth = d;
 	//Draw SkyBox
@@ -615,7 +592,30 @@ void DrawResturant(int w, int h, int d) {
 	//Draw Colba
 	DrawColbas();
 	//Draw Tree
-	DrawTrees();
+	DrawTree(14,0,9.5);
+	DrawTree(-14, 0, 9.5);
+	DrawTree(9, 0, -5);
+	DrawTree(-9, 0, -5);
+
+	//Draw Plate
+	glPushMatrix();
+	glTranslatef(-width/2 + 0.1f, height / 2, 2);
+	glRotatef(90, 0, 1, 0);
+	DrawPlate(7, 4, 0.1, SyriaPlate); 
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(+width / 2 - 0.1f, height / 1.5, -1);
+	glRotatef(-90, 0, 1, 0);
+	DrawPlate(4, 2, 0.1, SalesPlate);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(+width / 2 - 0.1f, height / 1.5, 5);
+	glRotatef(-90, 0, 1, 0);
+	DrawPlate(4, 2, 0.05, SalesPlate);
+	glPopMatrix();
+
 }
 
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing

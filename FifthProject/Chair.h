@@ -16,6 +16,8 @@ public:
 
     // Method to draw the chair
     void Draw();
+    void setLegsTexture(int legsTexture);
+    void setChair(int chair);
 };
 
 #endif
