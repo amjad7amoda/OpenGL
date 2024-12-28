@@ -1,5 +1,4 @@
 #include "Chair.h"
-
 Chair::Chair(float _x, float _y, float _z, float _seatSize, float _seatHeight, float _backrestHeight, float _legThickness) {
     x = _x;
     y = _y;
@@ -8,8 +7,9 @@ Chair::Chair(float _x, float _y, float _z, float _seatSize, float _seatHeight, f
     seatHeight = _seatHeight;
     backrestHeight = _backrestHeight;
     legThickness = _legThickness;
-}
 
+  
+}
 
 void Chair::Draw() {
     // Draw chair seat

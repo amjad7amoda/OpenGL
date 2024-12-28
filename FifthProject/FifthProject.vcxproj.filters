@@ -39,6 +39,9 @@
     <ClCompile Include="Colba.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Restaurant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">

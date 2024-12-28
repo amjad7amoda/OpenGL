@@ -18,6 +18,7 @@ public:
     void Draw();
     void setLegsTexture(int legsTexture);
     void setChair(int chair);
+    void AddCollisionBox();
 };
 
 #endif

@@ -31,8 +31,8 @@ void Colba::draw() {
     glBegin(GL_QUADS);
     glVertex3f(-w / 2 + offset, 0, d / 2 - offset);
     glVertex3f(-w / 2 + offset, 0, -d / 2 - offset);
-    glVertex3f(-w / 2 + offset, h + 2, -d / 2 - offset);
-    glVertex3f(-w / 2 + offset, h + 2, d / 2 - offset);
+    glVertex3f(-w / 2 + offset, h, -d / 2 - offset);
+    glVertex3f(-w / 2 + offset, h, d / 2 - offset);
     glEnd();
 
     // Right Face
@@ -40,8 +40,8 @@ void Colba::draw() {
     glBegin(GL_QUADS);
     glVertex3f(w / 2 - offset, 0, d / 2 - offset);
     glVertex3f(w / 2 - offset, 0, -d / 2 - offset);
-    glVertex3f(w / 2 - offset, h + 2, -d / 2 - offset);
-    glVertex3f(w / 2 - offset, h + 2, d / 2 - offset);
+    glVertex3f(w / 2 - offset, h, -d / 2 - offset);
+    glVertex3f(w / 2 - offset, h, d / 2 - offset);
     glEnd();
 
     // Back Face
